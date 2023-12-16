@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1KcDHeVnfM9MYhhHYmDTAmjLaaNwR/payT9i7lzySzk5mIMYqMOHmtSAC9kaE6ssp+8oLKIPODKcs76N+OXssQ==",
+  "dgSpecHash": "F9nRMZvOKKDzlQocGyucPpxD1acWuspictqgwGzuzSLyUGDutQvVlvr3ZUSZR0pitm1ablB5y2yZ60pc3PVqQQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\guam\\source\\repos\\BlazorSearch\\BlazorSearch\\BlazorSearch.csproj",
+  "projectFilePath": "C:\\Users\\guam\\Documents\\GitHub\\blazorbravesearch\\BlazorSearch\\BlazorSearch.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\guam\\.nuget\\packages\\htmlagilitypack\\1.11.55\\htmlagilitypack.1.11.55.nupkg.sha512"
   ],
