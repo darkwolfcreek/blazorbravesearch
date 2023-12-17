@@ -17,6 +17,13 @@
     </div>
 </div>
 
+<div class="d-flex justify-content-center mb-3">
+    @foreach (var buttonLabel in buttonOptions)
+    {
+        <button class="btn btn-secondary me-2" @onclick="() => SearchWithPrefix(buttonLabel)">@buttonLabel</button>
+    }
+</div>
+
 @if (searchResults != null && searchResults.Any())
 {
     <div class="container">
@@ -29,7 +36,7 @@
                             <h5 class="card-title">
                                 @{
                                     var faviconUrl = GetFaviconUrl(result.Url);
-                                    <img src="@faviconUrl" onerror="this.onerror=null;this.src='https://placehold.co/16x16';" style="width: 16px; height: 16px; border-radius: 50%; vertical-align: middle;">
+                                    <img src="@GetFaviconUrl(result.Url, 16)" onerror="this.onerror=null;this.src='https://placehold.co/16x16';" style="width: 16px; height: 16px; border-radius: 50%; vertical-align: middle;">
                                 }
                                 <a href="@result.Url" target="_blank">@CleanHtml(result.Title)</a>
                             </h5>
@@ -45,21 +52,6 @@
             }
         </div>
     </div>
-
-    <nav aria-label="Search results pages" class="mt-4">
-        <ul class="pagination justify-content-center">
-            @if (currentPage > 1)
-            {
-                <li class="page-item">
-                    <button class="page-link" @onclick="PreviousPage">Previous</button>
-                </li>
-            }
-            <li class="page-item active"><span class="page-link">@currentPage</span></li>
-            <li class="page-item">
-                <button class="page-link" @onclick="NextPage">Next</button>
-            </li>
-        </ul>
-    </nav>
 }
 else if (searchQueryAttempted)
 {
@@ -70,9 +62,11 @@ else if (searchQueryAttempted)
     private string searchQuery;
     private List<SearchResult> searchResults;
     private bool searchQueryAttempted = false;
-    private int currentPage = 1;
-    private const int resultsPerPage = 20;
     private readonly HttpClient httpClient = new HttpClient();
+
+    private readonly string[] buttonOptions = new string[] { "Item", "Spell", "Quest", "PetAbility", "NPC", "Mount", "Location", "Jewel", "House", "Fish", "Creature", "ItemCard", "TreasureCard", };
+
+    private readonly string[] whitelist = new string[] { "wizard101central.com", };
 
     protected override void OnInitialized()
     {
@@ -82,18 +76,54 @@ else if (searchQueryAttempted)
         httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
     }
 
+    private async Task SearchWithPrefix(string prefix)
+    {
+        searchQueryAttempted = true;
+        searchResults = new List<SearchResult>();
+
+        string queryWithPrefix = $"{prefix}:";
+        Console.WriteLine($"Searching with prefix: {queryWithPrefix}");
+
+        foreach (var domain in whitelist)
+        {
+            string combinedQuery = $"{queryWithPrefix} site:{domain}";
+            await PerformSearch(combinedQuery);
+        }
+
+        if (!searchResults.Any())
+        {
+            searchResults = null;
+        }
+    }
+
     private async Task Search()
     {
         searchQueryAttempted = true;
         searchResults = null;
+
+        Console.WriteLine($"Searching with query: {searchQuery}");
+        await PerformSearch(searchQuery);
+
+        if (searchResults == null || !searchResults.Any())
+        {
+            foreach (var domain in whitelist)
+            {
+                string combinedQuery = $"{searchQuery} site:{domain}";
+                await PerformSearch(combinedQuery);
+            }
+        }
+    }
+
+    private async Task PerformSearch(string query)
+    {
+        Console.WriteLine($"Performing search for: {query}");
 
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
         httpClient.DefaultRequestHeaders.Add("X-Subscription-Token", "BSAc-pd1ysk-2LYFAyI2LQWLf2HZ5F7");
 
-        int offset = (currentPage - 1) * resultsPerPage;
-        var requestUri = $"res/v1/web/search?q={Uri.EscapeDataString(searchQuery)}&count={resultsPerPage}&offset={offset}";
+        var requestUri = $"res/v1/web/search?q={Uri.EscapeDataString(query)}";
 
         try
         {
@@ -103,44 +133,37 @@ else if (searchQueryAttempted)
                 var stream = await response.Content.ReadAsStreamAsync();
                 var jsonResponse = await new StreamReader(new GZipStream(stream, CompressionMode.Decompress)).ReadToEndAsync();
                 var searchResponse = JsonSerializer.Deserialize<BraveSearchResponse>(jsonResponse);
-                searchResults = searchResponse?.Web?.Results;
+
+                if (searchResponse?.Web?.Results != null)
+                {
+                    searchResults = searchResponse.Web.Results
+                        .Where(result => whitelist.Any(domain => new Uri(result.Url).Host.Contains(domain)))
+                        .ToList();
+                }
             }
             else
             {
                 Console.WriteLine($"API call unsuccessful: {response.ReasonPhrase}");
+                // You may want to handle different HTTP status codes differently
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error during API call: {ex.Message}");
+            // Implement error handling logic as needed
         }
     }
 
-    private async Task PreviousPage()
-    {
-        if (currentPage > 1)
-        {
-            currentPage--;
-            await Search();
-        }
-    }
-
-    private async Task NextPage()
-    {
-        currentPage++;
-        await Search();
-    }
-
-    private string GetFaviconUrl(string url)
+    private string GetFaviconUrl(string url, int size = 24)
     {
         try
         {
             var uri = new Uri(url);
-            return $"{uri.Scheme}://{uri.Host}/favicon.ico";
+            return $"https://www.google.com/s2/favicons?domain={uri.Host}&sz={size}";
         }
         catch
         {
-            return "";
+            return "https://placehold.co/16x16";
         }
     }
 
@@ -162,6 +185,17 @@ else if (searchQueryAttempted)
         public List<SearchResult> Results { get; set; }
     }
 
+    public class ImageSearchApiResponse
+    {
+        public List<ImageResult> Results { get; set; }
+    }
+
+    public class ImageResult
+    {
+        public string Url { get; set; }
+        // Add other necessary properties from the API response
+    }
+
     public class SearchResult
     {
         [JsonPropertyName("title")]
@@ -175,5 +209,8 @@ else if (searchQueryAttempted)
 
         [JsonPropertyName("page_age")]
         public string PageAge { get; set; }
+
+        // New property for image URL
+        public string ImageUrl { get; set; }
     }
 }
