@@ -1,5 +1,3 @@
-Great, with the MIT License details provided, here's how you can incorporate it into your README:
-
 # BlazorBraveSearch
 
 <img src="https://i.imgur.com/8cfTuJj.png" alt="BlazorBraveSearch Interface" width="250"/>
