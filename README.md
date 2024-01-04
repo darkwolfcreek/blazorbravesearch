@@ -1,29 +1,49 @@
 # BlazorBraveSearch
 
-![BlazorBraveSearch Interface](https://i.imgur.com/8cfTuJj.png =250x)
+<img src="https://i.imgur.com/8cfTuJj.png" alt="BlazorBraveSearch Interface" width="250"/>
 
-BlazorBraveSearch is a versatile web application built with Blazor, initially designed for searching items related to the game Wizard101 using the Brave Search API. However, its adaptable architecture allows it to be modified to search for a wide range of topics beyond just this game.
+BlazorBraveSearch is a dynamic web application built using the Blazor framework. It showcases the capability to perform searches related to Wizard101, but its flexible design allows for adaptation to various other search domains.
 
-## Blazor and Brave Search API
+## Features
 
-This application leverages Blazor, a .NET web framework, for building interactive web UIs with C#. Blazor's capability to run in the browser via WebAssembly, combined with server-side logic in .NET, makes it a powerful choice for web development.
+- **Blazor Framework**: Utilizes Blazor for interactive UIs in C#.
+- **Brave Search API**: Implements this API for efficient search result fetching.
+- **Adaptable for Various Searches**: Initially focuses on Wizard101, but can be easily adapted for other topics.
+- **User-Friendly Interface**: Clean, responsive UI with easy navigation.
 
-It utilizes the Brave Search API for fetching search results, demonstrating its ability to integrate with different APIs effectively.
+## Technology Stack
 
-## Flexible Code Structure
+- **Blazor**: A .NET web framework used for building the application.
+- **Brave Search API**: Integrated for handling search queries and results.
+- **.NET HttpClient**: For making HTTP requests to the API.
+- **WebAssembly**: Enables running C# code in the browser.
 
-The code structure is designed for adaptability:
+## Installation
 
-- `HttpClient`: It is used for making HTTP requests to the Brave Search API, but can be reconfigured to interact with different APIs or endpoints as needed.
+1. Clone the repository: `git clone [repository URL]`.
+2. Navigate to the project directory: `cd BlazorBraveSearch`.
+3. Restore dependencies: `dotnet restore`.
+4. Run the application: `dotnet run`.
 
-- `Search` and `PerformSearch` Functions: These functions, although currently tuned for Wizard101 searches, can be easily modified to cater to other search criteria. They demonstrate the application's capability to handle various search algorithms and response handling.
+## How It Works
 
-- `GetFaviconUrl` and `CleanHtml` Functions: These utility functions add to the application's versatility, as they can be useful in various contexts.
+The main interface allows users to enter search queries, which are processed using Brave Search API. The results are displayed in a structured format, with options for filtering and direct links. Users can also search with predefined buttons for specific categories like "Item", "Spell", "Quest", etc.
 
-- Data Models: The current data models like `BraveSearchResponse`, `WebSearch`, etc., are structured for the current use case but can be adapted or extended for different types of data structures required by other domains or APIs.
+### Code Highlights
 
-## Broad Usage Potential
+- **Search Functionality**: The application contains functions to handle search queries, both general and prefixed. 
+- **Dynamic Result Display**: The UI dynamically updates to show search results or a 'No results found' message.
+- **Customizable Whitelist**: Includes a domain whitelist, enhancing the search focus.
+- **Error Handling**: Basic error handling is implemented for API calls.
 
-While initially focused on Wizard101, the BlazorBraveSearch application's architecture is not inherently tied to this game. Its flexible design means it can be repurposed for different search applications, ranging from other gaming titles to entirely different domains like educational content, e-commerce, or specialized data repositories.
+## Contributing
 
-The application's ability to handle different types of search queries, process various response formats, and present results in a user-friendly format makes it a robust foundation for a wide array of search-based web applications.
+Contributions to enhance BlazorBraveSearch are welcome. Please feel free to fork the repository, make improvements, and submit pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Contact
+
+For any inquiries or contributions, please contact darkwolfcreek2768@hotmail.com.
